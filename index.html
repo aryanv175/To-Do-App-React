@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Todo</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      function TodoList({ startTodos }) {
+        let [todos, setTodos] = React.useState(startTodos);
+        let [currentTodo, setCurrentTodo] = React.useState('');
+
+        function updateTodo(i, f) {
+            let newTodos = [...todos.slice(0, i), f(todos[i]), ...todos.slice(i + 1)];
+            newTodos.sort((a, b) => a.done - b.done);
+            setTodos(newTodos);
+        }
+
+        return (
+            <>
+                <h1> Todo </h1>
+                {todos.map((todo, i) => (
+                    <React.Fragment key={todo.key}>
+                        <input type="checkbox" 
+                               onChange={e => updateTodo(i, t => { return {...t, done: e.target.checked} })} 
+                               checked={todo.done}
+                               />
+                        <span style={{textDecoration: todo.done ? 'line-through' : 'none'}}>{todo.text}</span>
+                        <br/>
+                    </React.Fragment>
+                ))}
+                <input type="checkbox" checked={false}/><span>{currentTodo}</span>
+                <br/>
+                <input type="text" value={currentTodo} onChange={e => setCurrentTodo(e.target.value)}/>
+                <button onClick={() => {
+                    setTodos([{key: todos.length, text: currentTodo, done: false}, ...todos]);
+                    setCurrentTodo('');
+                }}> Add </button>
+            </>
+        );
+      }
+
+      const container = document.getElementById('root');
+      const root = ReactDOM.createRoot(container);
+
+      let todos = [
+        {key: 0, text: '0', done: false},
+      ];
+
+      root.render(<>
+          <TodoList startTodos={todos}/>
+      </>);
+    </script>
+  </body>
+</html>
